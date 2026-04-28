@@ -3,8 +3,11 @@ import { toast } from '~/composables/util';
 import { getToken } from '~/composables/auth';
 import store from './store'
 
+// 判断当前环境是开发环境还是生产环境
+const isProduction = import.meta.env.PROD;
+console.log('当前开发环境-----' + isProduction);
 const service = axios.create({
-    baseURL:'/api'
+    baseURL: isProduction ? 'http://ceshi13.dishait.cn' : '/api'
 })
 
 // 添加请求拦截器
