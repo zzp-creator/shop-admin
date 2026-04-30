@@ -7,7 +7,7 @@ import store from './store'
 const isProduction = import.meta.env.PROD;
 console.log('当前开发环境-----' + isProduction);
 const service = axios.create({
-    baseURL: isProduction ? 'https://ceshi13.dishait.cn' : '/api'
+    baseURL: isProduction ? 'https://my-api-proxy.1415466859.workers.dev/' : '/api'
 })
 
 // 添加请求拦截器
