@@ -35,7 +35,7 @@ app.all('/proxy', async (req, res) => {
     const response = await axios({
       method: req.method,
       url: targetUrl,
-      data: req.body,
+      data: req.body || {},
       headers: {
         'Content-Type': 'application/json',
         // 如果有需要，可以在这里添加第三方需要的 Header
