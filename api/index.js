@@ -14,7 +14,7 @@ app.use(express.json());
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 // 3. 定义代理接口
-app.all('/proxy', async (req, res) => {
+app.all('*', async (req, res) => {
   try {
     // 获取前端传来的目标路径，例如 ?path=admin/login
     const targetPath = req.query.path;
@@ -23,9 +23,7 @@ app.all('/proxy', async (req, res) => {
       return res.status(400).json({ error: '缺少 path 参数' });
     }
 
-    // 1. 确保 targetPath 去掉了开头的 '/api'
-    const realPath = targetPath.replace(/^\/api/, '');
-    const targetUrl = `http://ceshi13.dishait.cn/${realPath}`;
+    const targetUrl = `http://ceshi13.dishait.cn/${targetPath}`;
     console.log('正在代理到:', targetUrl);
 
     // 转发请求
