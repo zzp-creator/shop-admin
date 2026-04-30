@@ -26,6 +26,9 @@ app.all('*', async (req, res) => {
         return res.send('Vercel Proxy is Running!');
     }
 
+    // 3. 【关键修改】为路径添加 /api 前缀
+    targetPath = '/api' + targetPath;
+    
     const targetUrl = `http://ceshi13.dishait.cn${targetPath}`;
     console.log('正在代理:', req.method, targetUrl);
     // 转发请求
