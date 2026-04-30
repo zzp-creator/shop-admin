@@ -17,15 +17,17 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 app.all('*', async (req, res) => {
   try {
     // 获取前端传来的目标路径，例如 ?path=admin/login
-    const targetPath = req.query.path;
+    const targetPath = req.path;
     
-    if (!targetPath) {
-      return res.status(400).json({ error: '缺少 path 参数' });
+    // if (!targetPath) {
+    //   return res.status(400).json({ error: '缺少 path 参数' });
+    // }
+    if (targetPath === '/') {
+        return res.send('Vercel Proxy is Running!');
     }
 
-    const targetUrl = `http://ceshi13.dishait.cn/${targetPath}`;
-    console.log('正在代理到:', targetUrl);
-
+    const targetUrl = `http://ceshi13.dishait.cn${targetPath}`;
+    console.log('正在代理:', req.method, targetUrl);
     // 转发请求
     const response = await axios({
       method: req.method,
@@ -34,6 +36,7 @@ app.all('*', async (req, res) => {
       headers: {
         'Content-Type': 'application/json',
         // 如果有需要，可以在这里添加第三方需要的 Header
+        'Cookie': req.headers.cookie || '' // 如果前端传了 Cookie，也转发过去
       },
       timeout: 10000,
     });
