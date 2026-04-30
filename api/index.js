@@ -37,6 +37,10 @@ app.all('/proxy', async (req, res) => {
       url: targetUrl,
       data: req.body || {},
       headers: {
+        // 1. 复制前端的所有请求头（这样能拿到 token）
+        ...req.headers,
+        // 2. 强制指定 Host，这能解决 400 错误
+        'Host': 'ceshi13.dishait.cn',
         'Content-Type': 'application/json',
         // 如果有需要，可以在这里添加第三方需要的 Header
         'Cookie': req.headers.cookie || '' // 如果前端传了 Cookie，也转发过去
