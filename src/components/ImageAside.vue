@@ -2,7 +2,9 @@
     <el-aside width="200px" class="image-aside" v-loading="loading">
         <div class="top">
 
-            <AsideList :active="activeId == item.id" v-for="(item,index) in pageList" :key="index">
+            <AsideList :active="activeId == item.id" v-for="(item,index) in 
+            pageList" :key="index" @edit="handleEdit(item)" 
+            @delete="handleDelete(item.id)" @click="handleChangeActiveId(item.id)">
                 {{ item.name }}
             </AsideList>
         </div>
@@ -12,23 +14,37 @@
         </div>
     </el-aside>
 
-    <FormDrawer title="新增" ref="forDrawerRef" @submit="handleSubmit">
-
+    <FormDrawer :title="drawerTitle" ref="formDrawerRef" @submit="handleSubmit">
+        <el-form :model="form" ref="formRef" :rules="rules" 
+        label-width="80px" :inline="false">
+            <el-form-item label="分类名称" prop="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="排序" prop="order">
+                <el-input-number v-model="form.order" :min="0" :max="1000"/>
+            </el-form-item>
+        </el-form>
+        
     </FormDrawer>
 </template>
 
 <script setup>
 import {
-    getImageClassList
+    getImageClassList,
+    createImageClass,
+    updateImageClass,
+    deleteImageClass
 } from '~/api/image_class.js';
 import AsideList from './AsideList.vue';
-import { ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import FormDrawer from './FormDrawer.vue';
+import { 
+    toast 
+} from '~/composables/util.js';
 
 // 加载动画
 const loading = ref(false);
 const pageList = ref([]);
-const activeId = ref(0);
 
 // 分页数据
 const currentPage = ref(1);
@@ -47,10 +63,8 @@ function getData(p = null) {
         pageList.value = res.list;
         let item = res.list[0];
         if (item) {
-            activeId.value = item.id;
+            handleChangeActiveId(item.id);
         }
-        console.log(res);
-        
     }).finally(()=> {
         loading.value = false;
     })
@@ -58,11 +72,85 @@ function getData(p = null) {
 
 getData();
 
+const editId = ref(0);
+const drawerTitle = computed(() => editId.value > 0 ? '修改' : '新增');
+
 const formDrawerRef = ref(null);
-const handleCreate = ()=> formDrawerRef.value.open();
-const handleSubmit = ()=> {
-    console.log('提交表单');
+
+const form = reactive({
+    name: "",
+    order: 50
+})
+
+const rules = {
+    name: [{
+        required: true,
+        message: '图库分类名称不能为空',
+        trigger: 'blur'
+    },]
 }
+
+// 表单的ref
+const formRef = ref(null);
+const handleSubmit = () => {
+    formRef.value.validate((valid) => {
+        if(!valid) return
+
+        formDrawerRef.value.showLoading();
+        const fun = editId.value ? updateImageClass(editId.value, form) : 
+        createImageClass(form);
+        
+        fun.then(res => {
+            toast(drawerTitle.value + '成功');
+            getData(editId.value ? currentPage.value : 1);
+            formDrawerRef.value.close();
+        }).finally(()=>{
+            formDrawerRef.value.hideLoading()
+        })
+    })
+}
+
+// 新增
+const handleCreate = ()=> {
+    editId.value = 0;
+    form.name = '';
+    form.order = 50;
+    formDrawerRef.value.open();
+}
+
+// 编辑
+const handleEdit = (row) => {
+    editId.value = row.id;
+    form.name = row.name;
+    form.order = row.order;
+    
+    formDrawerRef.value.open();
+}
+
+const handleDelete = (id) => {
+    loading.value = true;
+    deleteImageClass(id)
+    .then(res => {
+        toast('删除成功')
+        getData()
+    })
+    .finally(() => {
+        loading.value = false;
+    })
+}
+
+// 选中图库分类ID
+const activeId = ref(0);
+const emit = defineEmits(["change"]);
+// 切换分类
+function handleChangeActiveId(id) {
+    activeId.value = id;
+    emit("change", id);
+}
+
+defineExpose({
+    handleCreate
+})
 
 </script>
 
