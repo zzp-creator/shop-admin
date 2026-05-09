@@ -5,13 +5,16 @@
             <el-row :gutter="10">
                 <el-col :span="6" :offset="0" v-for="(item, index) in pageList" 
                 :key="index">
-                    <el-card shadow="hover" class="relative mb-3" :body-style="{'padding': 0}">
+                    <el-card shadow="hover" class="relative mb-3" :body-style=
+                    "{'padding': 0}" :class="{ 'border-gray-500':item.checked }">
                         <el-image :src="item.url" fit="cover" :lazy="true" 
                         class="h-[150px]" style="width: 100%" 
                         :preview-src-list="[item.url]"
                         :initial-index="0"></el-image>
                         <div class="image-title">{{ item.name }}</div>
                         <div class="flex items-center justify-center p-2">
+                            <el-checkbox v-if="openChoose" v-model="item.checked" @change="handleChooseChange(item)"/>
+                            
                             <el-button type="primary" size="small" text 
                             @click="handleEdit(item)">
                                 重命名
@@ -19,7 +22,7 @@
                             <el-popconfirm title="是否要删除该图片?" confirmButtonText="确认"
                             cancelButtonText="取消" @confirm="handleDelete(item.id)">
                                 <template #reference>
-                                    <el-button type="primary" size="small" text @click="">
+                                    <el-button class=" m-0" type="primary" size="small" text @click="">
                                         删除
                                     </el-button>
                                 </template>
@@ -57,7 +60,7 @@ import {
     showPrompt,
     toast
 } from '~/composables/util.js';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import UploadFile from './UploadFile.vue';
 
 // 上传图片
@@ -81,7 +84,10 @@ function getData(p = null) {
     getImageList(image_class_id.value, currentPage.value)
     .then(res=>{
         total.value = res.totalCount;
-        pageList.value = res.list;
+        pageList.value = res.list.map(o=> {
+            o.checked = false;
+            return o;
+        });
     }).finally(()=> {
         loading.value = false;
     })
@@ -124,6 +130,24 @@ const handleDelete = (id)=> {
 
 // 上传成功
 const handleUploadSuccess = ()=> getData(1);
+
+defineProps({
+    openChoose:{
+        type: Boolean,
+        default: false
+    }
+})
+
+// 选中的图片
+const emit = defineEmits(['choose'])
+const checkImage = computed(()=> pageList.value.filter(o=>o.checked))
+const handleChooseChange = (item) => {
+    if(item.checked && checkImage.value.length > 1) {
+        item.checked = false;
+        return toast('最多只能选中一张图片', 'error');
+    }
+    emit('choose', checkImage.value);
+}
 
 defineExpose({
     loadData,
