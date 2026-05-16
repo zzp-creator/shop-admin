@@ -45,17 +45,31 @@ const handleChoose = (type)=> {
     getData();
 }
 
-var myChart = null
+var myChart = null;
+let timer = null;
+const el = ref(null)
+
 onMounted(()=> {
-    var chartDom = document.getElementById('chart');
-    if (chartDom) {
-        myChart = echarts.init(chartDom);
-        getData();
-    }
+    timer = setTimeout(() => {
+        var chartDom = document.getElementById('chart');
+        if (chartDom) {
+            myChart = echarts.init(chartDom);
+            getData();
+        }
+
+        if (el.value) {
+            useResizeObserver(el, (entries) => {
+                if (myChart) {
+                    myChart.resize()
+                }
+            })
+        }
+    })
 })
 
 onBeforeUnmount(()=> {
     if (myChart) echarts.dispose(myChart)
+    if (timer) clearTimeout(timer);
 })
 
 function getData() {
@@ -93,8 +107,5 @@ function getData() {
         myChart.hideLoading();
     })
 }
-
-const el = ref(null)
-useResizeObserver(el, (entries) => myChart.resize())
 
 </script>

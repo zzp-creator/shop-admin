@@ -1,18 +1,30 @@
 <template>
     <el-card shadow="never" class="border-0">
         <!-- 新增|刷新 -->
-         <ListHeader @create="handleCreate" @refresh="getData" />
-        <!-- <div class="flex items-center justify-between mb-4">
-            <el-button type="primary" size="small" @click="handleCreate">新增</el-button>
-            <el-tooltip effect="dark" content="刷新数据" placement="top">
-                <el-button text @click="getData">
-                    <el-icon :size="20">
-                        <Refresh />
-                    </el-icon>
+        <ListHeader @create="handleCreate" @refresh="getData" />
+        <!-- 右侧：放当前页面特有的按钮（导出） -->
+        <div class="flex items-center justify-between">
+            <el-button type="success" size="small" 
+            @click="handleExport">
+                <el-icon><Download /></el-icon>
+                导出Excel
+            </el-button>
+            <!-- 导入按钮 -->
+            <el-upload
+                ref="uploadRef"
+                class="upload-demo"
+                action="#" 
+                :auto-upload="false"
+                :on-change="handleFileUpload"
+                :show-file-list="false"
+                accept=".xlsx, .xls"
+            >
+                <el-button type="primary" size="small">
+                    <el-icon><Upload /></el-icon>
+                    导入Excel
                 </el-button>
-            </el-tooltip>
-        </div> -->
-
+            </el-upload>
+        </div>
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="title" label="公告标题" min-width="200" show-overflow-tooltip />
             <el-table-column prop="create_time" label="发布时间" width="380" />
@@ -51,6 +63,11 @@
 </template>
 
 <script setup>
+import dayjs from 'dayjs';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { ElMessage, ElLoading } from 'element-plus';
+import { ref } from 'vue';
 import ListHeader from '~/components/ListHeader.vue';
 import FormDrawer from '~/components/FormDrawer.vue';
 import {
@@ -106,5 +123,99 @@ const {
     update: updateNotice,
     create: createNotice
 });
+
+// 导出表格
+const handleExport = ()=> {
+    console.log(tableData.value);
+    const exportData = tableData.value.map(item => ({
+        '公告标题': item.title,
+        '发布时间': item.create_time,
+        '公告内容': item.content
+    }))
+
+    // 使用XLSX创建工作簿
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '公告列表');
+
+    // 导出文件
+    // 生成二进制字符串
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    // 创建Blob对象
+    const blob = new Blob([excelBuffer], { type:'application/octet-stream' });
+    // 格式化为：年月日时分秒 (例如：20260515153020)
+    const timeStr = dayjs().format('YYYYMMDDHHmmss');
+    saveAs(blob, `公告列表_${timeStr}.xlsx`);
+}
+
+// 定义上传组件的引用
+const uploadRef = ref(null);
+
+// 导入表格
+const handleFileUpload = (file)=> {
+    // 获取文件对象
+    const rawFile = file.raw;
+
+    if(!rawFile) return;
+
+    // 定义映射关系
+    const fieldMap = {
+        '公告标题': 'title',
+        '发布时间': 'create_time',
+        '公告内容': 'content'
+    };
+    // 创建FileReader
+    const reader = new FileReader();
+
+    // 读取完成后
+    reader.onload = (e)=> {
+        const data = new Uint8Array(e.target.result);
+
+        // 使用XLSX读取数据
+        const workbook = XLSX.read(data, { type: 'array' });
+        // 获取第一个工作表的名称
+        const firstSheetName = workbook.SheetNames[0];
+        const workSheet = workbook.Sheets[firstSheetName];
+        // 转换为JSON
+        const jsonData = XLSX.utils.sheet_to_json(workSheet);
+
+        // 进行转换
+        const formattedData = jsonData.map(json => {
+            const newJson = {};
+
+            // 遍历映射
+            Object.keys(fieldMap).forEach(excelKey => {
+                const codeKey = fieldMap[excelKey];
+
+                if( json[excelKey] !== undefined ) {
+                    newJson[codeKey] = json[excelKey];
+                }
+            });
+            return newJson;
+        });
+
+        console.log('解析出来的数据', formattedData);
+
+        //模拟上传和保存
+        submitToServer(formattedData);
+    };
+
+    // 开始读取文件
+    reader.readAsArrayBuffer(rawFile);
+}
+
+// 模拟提交给后端
+const submitToServer = (data) => {
+    const submitLoading = ElLoading.service({ text: '正在导入数据...' });
+
+    // 模拟网络延迟
+    setTimeout(()=> {
+        submitLoading.close();
+
+        tableData.value = [...data, ...tableData.value];
+
+        ElMessage.success('导入成功！模拟数据已更新')
+    }, 1500);
+}
 
 </script>
