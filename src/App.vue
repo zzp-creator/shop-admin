@@ -4,15 +4,26 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <!-- <HelloWorld /> -->
-  <router-view></router-view>
+  <div id="app">
+    <router-view></router-view>
+  </div>
 </template>
+
+<style>
+body {
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+</style>
 
 <style scoped>
 /* body{
   @apply bg-gray-500;
 } */
 #nprogress .bar{
-  background-color: #f4f4f4!important;
+  /* background-color: #f4f4f4!important; */
+  background-color: var(--accent) !important;
   height: 3px!important;
 }
 ::-webkit-scrollbar{
@@ -24,12 +35,14 @@ import HelloWorld from './components/HelloWorld.vue'
 }
 ::-webkit-scrollbar-thumb{
   border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0.2);
+  /* background-color: rgba(0, 0, 0, 0.2); */
+  background-color: var(--border);
 }
 ::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-track{
   border-right-color: transparent;
   border-left-color: transparent;
-  background-color: rgba(0, 0, 0, 0.1);
+  /* background-color: rgba(0, 0, 0, 0.1); */
+  background-color: transparent;
 }
 </style>

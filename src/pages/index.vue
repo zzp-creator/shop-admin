@@ -148,3 +148,14 @@
     //     order.value = res.order;
     // })
 </script>
+<style scoped>
+:deep(.grid-stack-item > .ui-resizable-handle) {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+:deep(.grid-stack-item:hover > .ui-resizable-handle) {
+    opacity: 1;
+}
+</style>

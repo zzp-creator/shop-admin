@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-container class="bg-white rounded" :style="{ height: (h + 'px') }">
+        <el-container class="bg-white dark:bg-header-dark rounded" :style="{ height: (h + 'px') }">
             <el-header class="image-header">
                 <el-button type="primary" size="small" @click="handleOpenCreate">
                     新增图片分类

@@ -50,8 +50,10 @@
   }
 }
 
-body {
+html, body {
   margin: 0;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 h1,
@@ -161,7 +163,7 @@ code {
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  border-inline: 1px solid var(--border);
+  /* border-inline: 1px solid var(--border); */
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -293,4 +295,18 @@ code {
     right: 0;
     border-right-color: var(--border);
   }
+}
+
+/* 针对暗黑模式下的输入框 */
+html.dark .el-input__inner,
+html.dark .el-textarea__inner {
+  background-color: #1f1f1f !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+/* 当输入框被点击时 */
+html.dark .el-input__inner:focus,
+html.dark .el-textarea__inner:focus {
+  border-color: #409EFF !important;
 }

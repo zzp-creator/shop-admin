@@ -1,0 +1,23 @@
+/* 亮色主题（默认） */
+:root {
+    /* 背景色 */
+    --bg-body: #f0f2f5;
+    --bg-card: #ffffff;
+    /* 文字色 */
+    --text-primary: #303133;
+    --text-regular: #606266;
+    /* 边框色 */
+    --border-color: #dcdfe6;
+}
+
+/* 暗黑主题 */
+html.dark {
+    /* 背景色 */
+    --bg-body: #141414;
+    --bg-card: #1f1f1f;
+    /* 文字色 */
+    --text-primary: #e5e5e5;
+    --text-regular: #a8a8a8;
+    /* 边框色 */
+    --border-color: #303030;
+}

@@ -41,14 +41,14 @@ const {
 
 <style scoped>
 .f-tag-list {
-    @apply fixed bg-gray-100 flex items-center px-2;
+    @apply fixed bg-gray-100 dark:bg-header-dark flex items-center px-2;
     top: 64px;
     right: 0;
     height: 44px;
     z-index: 100;
 }
 .tag-btn {
-    @apply bg-white rounded ml-auto flex items-center justify-center px-2;
+    @apply bg-white dark:bg-header-dark rounded ml-auto flex items-center justify-center px-2;
     height: 32px;
 }
 :deep(.el-tabs__header) {
@@ -62,7 +62,7 @@ const {
     border: 0!important;
     height: 32px;
     line-height: 32px;
-    @apply bg-white mx-1 rounded;
+    @apply bg-white dark:bg-header-dark mx-1 rounded;
 }
 :deep(.el-tabs__nav-next),:deep(.el-tabs__nav-prev) {
     line-height: 32px;

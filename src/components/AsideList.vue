@@ -36,10 +36,22 @@ defineEmits(["edit", "delete"])
     border-bottom: 1px solid #f4f4f4;
     cursor: pointer;
     @apply flex items-center p-3 text-sm text-gray-600;
+    @apply bg-white dark:bg-[#16171d];
+}
+
+html.dark .aside-list {
+    border-bottom-color: #333;
 }
 
 .aside-list:hover,
 .active {
-    @apply bg-blue-50;
+    @apply bg-blue-50 dark:bg-[#26272a];
+}
+
+html.dark .aside-list {
+    @apply text-gray-300;
+}
+html.dark .active {
+    @apply text-blue-400 border-1-2 border-blue-500
 }
 </style>

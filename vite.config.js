@@ -22,6 +22,11 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    WindiCSS()
+    WindiCSS({
+      scan: {
+        dirs: ['.'],
+        exclude: ['node_modules/**']
+      }
+    })
   ],
 })

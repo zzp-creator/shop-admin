@@ -12,6 +12,12 @@
             <el-icon class="icon-btn" @click="handleRefresh"><refresh /></el-icon>
         </el-tooltip>
         <div class="ml-auto flex items-center">
+            <el-tooltip effect="dark" content="亮色模式" placement="bottom" v-if="isDark">
+                <el-icon class="icon-btn" @click="toggleDark"><Sunny /></el-icon>
+            </el-tooltip>
+            <el-tooltip  effect="dark" content="暗黑模式" placement="bottom" v-else>
+                <el-icon class="icon-btn" @click="toggleDark"><Moon /></el-icon>
+            </el-tooltip>
             <el-tooltip effect="dark" content="全屏" placement="bottom">
                 <el-icon class="icon-btn" @click="toggle">
                     <FullScreen v-if="!isFullscreen" />
@@ -56,7 +62,7 @@
 
 <script setup>
 import FormDrawer from "~/components/FormDrawer.vue";
-import { useFullscreen } from '@vueuse/core';
+import { useDark, useToggle, useFullscreen } from '@vueuse/core';
 import { useRepassword, useLogout } from "~/composables/userManager";
 
 const { 
@@ -97,11 +103,24 @@ const handleCommand = (a)=> {
 // 刷新
 const handleRefresh = ()=> location.reload()
 
+// 暗黑模式切换
+const isDark = useDark({
+    selector: 'html',
+    attribute: 'class',
+    valueDark: 'dark',
+    valueLight: '',
+    storageKey: 'vueuse-color-scheme' // 明确指定存储键
+})
+
+const toggleDark = () => {
+    isDark.value = !isDark.value;
+};
 </script>
 
 <style>
 .f-header{
-    @apply flex items-center bg-indigo-700 text-light-50 fixed top-0 left-0 right-0;
+    @apply flex items-center bg-header dark:bg-header-dark text-light-50 fixed top-0 left-0 right-0;
+    /* background-color: #ff0000; */
     height: 64px;
     z-index: 1000;
     overflow: visible;
