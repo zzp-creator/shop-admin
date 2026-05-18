@@ -119,7 +119,7 @@ const toggleDark = () => {
 
 <style>
 .f-header{
-    @apply flex items-center bg-header dark:bg-header-dark text-light-50 fixed top-0 left-0 right-0;
+    @apply flex items-center bg-header dark:bg-black text-light-50 fixed top-0 left-0 right-0;
     /* background-color: #ff0000; */
     height: 64px;
     z-index: 1000;

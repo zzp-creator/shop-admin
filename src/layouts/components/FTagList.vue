@@ -41,7 +41,7 @@ const {
 
 <style scoped>
 .f-tag-list {
-    @apply fixed bg-gray-100 dark:bg-header-dark flex items-center px-2;
+    @apply fixed bg-gray-100 dark:bg-dark-900 flex items-center px-2;
     top: 64px;
     right: 0;
     height: 44px;

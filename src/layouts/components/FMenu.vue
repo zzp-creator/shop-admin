@@ -1,6 +1,6 @@
 <template>
     <div class="f-menu" :style="{ width:$store.state.asideWidth }">
-        <el-menu :default-active="defaultActive" :unique-opened="true" :collapse-transition="false" :collapse="isCollapse" default-active="2" class="border-0" @select="handleSelect">
+        <el-menu :default-active="defaultActive" :unique-opened="true" :collapse-transition="false" :collapse="isCollapse" default-active="2" class="border-0 dark:bg-header-dark" @select="handleSelect">
         <template v-for="(item, index) in asideMenus" :key="index">
             <el-sub-menu v-if="item.child && item.child.length > 0" 
             :index="item.name">
@@ -65,7 +65,7 @@ const handleSelect = (e)=> {
     left: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    @apply shadow-md fixed;
+    @apply shadow-md fixed dark:bg-header-dark;
 }
 .f-menu::-webkit-scrollbar{
     width: 0px;
