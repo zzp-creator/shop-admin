@@ -22,7 +22,17 @@ const app = createApp(App)
 
 app.use(ElementPlus)
 
-document.documentElement.classList.add('dark')
+const saveDark = localStorage.getItem('vueuse-color-scheme');
+if (saveDark) {
+  if (saveDark === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+} else {
+  document.documentElement.classList.remove('dark');
+}
+// document.documentElement.classList.add('dark')
 
 app.use(router)
 app.use(store)
