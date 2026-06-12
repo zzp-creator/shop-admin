@@ -1,7 +1,7 @@
 // import { defineStore } from 'vuex'
 import { defineStore } from 'pinia';
 import { login, getInfo } from '~/api/manager';
-import { setToken, removeToken } from '~/composables/auth';
+import { setToken, getToken, removeToken } from '~/composables/auth';
 import { logOut } from '../api/manager';
 import { ref } from 'vue';
 
@@ -10,13 +10,17 @@ export const useUserStore = defineStore('user', ()=> {
     const asideWidth = ref('250px')
     const menus = ref([])
     const ruleNames = ref([])
+    const tokenRef = ref(getToken() || '')
 
     // --- Actions (直接写函数，不需要 context 参数) ---
     // 登录
     const loginAction = async ({ username, password }) => {
         try {
             const res = await login(username, password)
-            setToken(res.token)
+            const newToken = res.token
+
+            tokenRef.value = newToken;
+            setToken(newToken)
             return res
         } catch (err) {
             return Promise.reject(err)
