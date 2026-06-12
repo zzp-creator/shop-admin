@@ -27,12 +27,14 @@ router.beforeEach(async (to, from, next)=> {
 
     let hasNewRoute = false
     // 如果用户登录了，自动获取用户信息，并存储在vuex中
-    if (token && !hasGetInfo) {
-        // let { menus } = await store.dispatch("getInfo")     
-        let { menus } = await userStore.getInfoAction();
-        hasGetInfo = true;
-        // 动态添加路由
-        hasNewRoute = addRoutes(menus)
+    if (token && !userStore.user.username) {
+        try {
+            let { menus } = await userStore.getInfoAction();
+            // 动态添加路由
+            hasNewRoute = addRoutes(menus)
+        }catch(error) {
+            console.error("获取用户信息失败", error);
+        }
     }
 
     // 设置页面标题

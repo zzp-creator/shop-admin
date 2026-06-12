@@ -32,7 +32,7 @@ export const useUserStore = defineStore('user', ()=> {
         try {
             const res = await getInfo()
             // 假设 res 包含 user 和 menus
-            user.value = res.user || {}
+            user.value = res || {}
 
             // 这里的 filterMenuTree 逻辑保持不变，但要改成 JS 函数形式
             const allowedMenus = ['后台面板', '用户管理', '管理员管理', '其他模块']
