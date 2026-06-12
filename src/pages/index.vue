@@ -1,19 +1,20 @@
 <template>
     <!-- <pre>{{ gridItems }}</pre> -->
-    <div class="grid-stack">
+    <div class="grid-stack" v-if="isDashboardReady">
         <div v-for="item in gridItems" :key="item.id" 
         class="grid-stack-item"
         :gs-x="item.x" :gs-y="item.y" :gs-w="item.w" :gs-h="item.h">
             <div class="grid-stack-item-content">
-                <component :is='item.component' v-bind="item.props" />
+                <component :is='item.component' :key="item.id" v-bind="item.props" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-    import { ref, onMounted, computed, nextTick, markRaw } from "vue";
-    import { useStore } from "vuex";
+    import { ref, onMounted, computed, nextTick, markRaw, watch } from "vue";
+    // import { useStore } from "vuex";
+    import { useUserStore } from "../store/user";
     import CountTo from "~/components/CountTo.vue";
     import TopStatsPanel from "~/components/TopStatsPanel.vue";
     import IndexNavs from "~/components/IndexNavs.vue";
@@ -23,15 +24,17 @@
         getStatistics1,
         getStatistics2
     } from "~/api/index.js";
-
     import { GridStack } from 'gridstack';
     import 'gridstack/dist/gridstack.min.css';
 
     // 获取store实例
-    const store = useStore();
+
+    // const store = useStore();
+    const userStore = useUserStore();
 
     // 从store中获取权限列表
-    const ruleNames = computed(() => store.state.ruleNames);
+    // const ruleNames = computed(() => store.state.ruleNames);
+    const ruleNames = computed(() => userStore.ruleNames);
     
     // 数据状态
     const panels = ref([]);
@@ -40,114 +43,150 @@
 
     // 布局配置状态
     const gridItems = ref([]);
+    const isDashboardReady = ref(false); // 新增：控制DOM渲染的标志
+
+    // 定义一个变量来存储 grid 实例，防止重复初始化
+    let gridInstance = null;
 
     // 初始化数据和布局
     const initDashboard = async () => {
-        // 获取基础统计数据
-        const res1 = await getStatistics1();
-        panels.value = res1.panels;
+        try{
+            // // 获取基础统计数据
+            // const res1 = await getStatistics1();
+            // panels.value = res1.panels;
+            // // 获取提示数据
+            // const res2 = await getStatistics2();
+            // goods.value = res2.goods;
+            // order.value = res2.order;
+            // 1. 并行获取所有数据，提高速度
+            const [res1, res2] = await Promise.all([
+                getStatistics1(),
+                getStatistics2()
+            ]);
 
-        // 获取提示数据
-        const res2 = await getStatistics2();
-        goods.value = res2.goods;
-        order.value = res2.order;
+            panels.value = res1.panels;
+            goods.value = res2.goods;
+            order.value = res2.order;
 
-        // 根据权限组装布局配置
-        const items = [];
-        let currentY = 0;   // 简单的自动排列Y轴坐标
+            // 根据权限组装布局配置
+            const items = [];
+            let currentY = 0;   // 简单的自动排列Y轴坐标
 
-        if(ruleNames.value.includes('getStatistics1,GET')) {
+            if(ruleNames.value.includes('getStatistics1,GET')) {
+                items.push({
+                    id: 'stats-1',
+                    component: markRaw(TopStatsPanel),    // 统计面板
+                    x: 0,
+                    y: currentY,
+                    w: 12,
+                    h: 3,
+                    props: {
+                        panels: panels.value
+                    }
+                });
+                currentY += 3;
+            }
             items.push({
-                id: 'stats-1',
-                component: markRaw(TopStatsPanel),    // 统计面板
+                id: 'main-navs',
+                component: markRaw(IndexNavs),
                 x: 0,
                 y: currentY,
                 w: 12,
-                h: 3,
-                props: {
-                    panels: panels.value
-                }
+                h: 2
             });
-            currentY += 3;
+
+            currentY += 2;
+            if(ruleNames.value.includes('getStatistics3,GET')) {
+                items.push({
+                    id: 'main-chart',
+                    component: markRaw(IndexChart),
+                    x: 0,
+                    y: currentY,
+                    w: 6,
+                    h: 7
+                });
+            }
+            if(ruleNames.value.includes('getStatistics2,GET')) {
+                items.push({
+                    id: 'info-cards-goods',
+                    component: markRaw(IndexCard),
+                    x: 6,
+                    y: currentY,
+                    w: 6,
+                    h: 3,
+                    props: {
+                        title: '店铺及商品提示',
+                        tip: '店铺及商品提示',
+                        btns: goods.value
+                    }
+                });
+                items.push({
+                    id: 'info-cards-order',
+                    component: markRaw(IndexCard),
+                    x: 6,
+                    y: currentY,
+                    w: 6,
+                    h: 3,
+                    props: {
+                        title: '交易提示',
+                        tip: '需要立即处理的交易订单',
+                        btns: order.value
+                    }
+                });
+            }
+
+            gridItems.value = items;
+
+            //【关键】打开开关，让 Vue 开始渲染 DOM
+            isDashboardReady.value = true;
+
+            // 初始化GridStack
+            await nextTick();
+
+            setTimeout(() => {
+                // 销毁旧实例（如果有），防止内存泄漏和样式冲突
+                if (gridInstance) {
+                    gridInstance.destroy(false); // false 表示不删除 DOM 节点
+                    gridInstance = null;
+                }
+                // 初始化
+                gridInstance = GridStack.init({
+                    cellHeight: 80,
+                    margin: 5,
+                    float: true, // 允许浮动
+                    animate: true // 开启动画，体验更好
+                });
+
+                // 强制GridStack重新计算布局
+                gridInstance.compact();
+
+            }, 100)
+
+            // const grid = GridStack.init({
+            //     cellHeight: 80,
+            //     margin: 5,
+            // });
+        } catch(error) {
+            console.error("初始化仪表盘失败:", error);
         }
 
-        items.push({
-            id: 'main-navs',
-            component: markRaw(IndexNavs),
-            x: 0,
-            y: currentY,
-            w: 12,
-            h: 2
-        });
-        
-        currentY += 2;
-
-        if(ruleNames.value.includes('getStatistics3,GET')) {
-            items.push({
-                id: 'main-chart',
-                component: markRaw(IndexChart),
-                x: 0,
-                y: currentY,
-                w: 6,
-                h: 7
-            });
-        }
-
-        if(ruleNames.value.includes('getStatistics2,GET')) {
-            items.push({
-                id: 'info-cards-goods',
-                component: markRaw(IndexCard),
-                x: 6,
-                y: currentY,
-                w: 6,
-                h: 3,
-                props: {
-                    title: '店铺及商品提示',
-                    tip: '店铺及商品提示',
-                    btns: goods.value
-                }
-            });
-            items.push({
-                id: 'info-cards-order',
-                component: markRaw(IndexCard),
-                x: 6,
-                y: currentY,
-                w: 6,
-                h: 3,
-                props: {
-                    title: '交易提示',
-                    tip: '需要立即处理的交易订单',
-                    btns: order.value
-                }
-            });
-        }
-        
-        
-        gridItems.value = items;
-
-        // 初始化GridStack
-        await nextTick();
-        const grid = GridStack.init({
-            cellHeight: 80,
-            margin: 5,
-        });
     };
 
     onMounted(() => {
         initDashboard();
     });
-    
+
     // getStatistics1().
     // then(res => {
     //     panels.value = res.panels;
     // })
 
-    
     // getStatistics2().then(res=> {
     //     goods.value = res.goods;
     //     order.value = res.order;
     // })
 </script>
+
 <style scoped>
 :deep(.grid-stack-item > .ui-resizable-handle) {
     opacity: 0;

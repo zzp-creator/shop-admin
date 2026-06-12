@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="w-full p-4 box-border">
         <el-row :gutter="20" v-permission="['getStatistics1,GET']">
             <template v-if="panels.length == 0">
                 <el-col :span="6" v-for="i in 4" :key="i">

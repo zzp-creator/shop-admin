@@ -83,7 +83,7 @@
                 </el-form-item>
                 <el-form-item label="头像" prop="avatar">
                     <!-- {{ form.avatar }} -->
-                    <ChooseImage v-model="form.avatar"/>
+                    <!-- <ChooseImage v-model="form.avatar"/> -->
                 </el-form-item>
                 <el-form-item label="所属角色" prop="role_id">
                     <el-select v-model="form.role_id" placeholder="选择所属角色">
@@ -108,7 +108,6 @@
 import { ref } from 'vue';
 import ListHeader from '~/components/ListHeader.vue';
 import FormDrawer from '~/components/FormDrawer.vue';
-import ChooseImage from '~/components/ChooseImage.vue';
 import {
     getManagerList,
     updateManagerStatus,

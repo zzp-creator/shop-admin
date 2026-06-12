@@ -1,7 +1,7 @@
 <template>
     <el-card shadow="never" class="border-0">
         <!-- 搜索 -->
-         <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
+         <!-- <el-form :model="searchForm" label-width="80px" class="mb-3" size="small">
             <el-row :gutter="20">
                 <el-col :span="8" :offset="0">
                     <el-form-item label="关键词">
@@ -15,13 +15,13 @@
                     </div>
                 </el-col>
             </el-row>
-         </el-form>
+         </el-form> -->
          
         <!-- 新增|刷新 -->
         <!-- <ListHeader @create="handleCreate" @refresh="getData" /> -->
 
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-            <el-table-column label="用户" min-width="200" show-overflow-tooltip>
+            <el-table-column label="会员名称" min-width="150" show-overflow-tooltip>
                 <template #default="{ row }">
                     <div class="flex items-center">
                         <el-avatar :size="40" :src="row.avatar">
@@ -30,19 +30,29 @@
                             /> -->
                         </el-avatar>
                         <div class="ml-3">
-                            <h6>{{ row.username }}</h6>
+                            <h6>{{ row.name }}</h6>
                             <small>ID: {{ row.id }}</small>
                         </div>
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="用户等级" align="center" width="280">
+            <el-table-column label="会员折扣" align="center" width="150">
                 <template #default="{ row }">
                     <!-- {{ row.role?.name || '-' }} -->
-                      Lv: {{ row.user_level?.id || '0' }} {{ row.user_level?.name || '' }}
+                      {{ row.discount + '%' || '0%' }}
                 </template>
             </el-table-column>
-            <el-table-column label="状态" width="120">
+            <el-table-column label="累计消费" align="center" width="150">
+                <template #default="{ row }">
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="ml-3">
+                            <h6>次数: {{ row.max_times }}</h6>
+                            <h6>金额: {{ row.max_price }}</h6>
+                        </div>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column label="状态" align="center" width="150">
                 <template #default="{ row }">
                     <el-switch :modelValue="row.status" :active-value="1" :inactive-value="0"
                     :loading="row.statusLoading" :disabled="row.super == 1" 
@@ -50,13 +60,13 @@
                     </el-switch>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="180" align="center">
+            <el-table-column label="操作" width="150" align="center">
                 <template #default="scope">
                     <small v-if="scope.row.super == 1" class="text-sm text-gray-500">暂无操作</small>
                     <div v-else>
                         <!-- <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button> -->
                         <!-- <el-button type="primary" size="small" text>删除</el-button> -->
-                        <el-popconfirm title="是否要删除该用户?" confirmButtonText="确认" 
+                        <el-popconfirm title="是否要删除该会员等级?" confirmButtonText="确认" 
                         cancelButtonText="取消" @confirm="handleDelete(scope.row.id)">
                             <template #reference>
                                 <el-button text type="primary" size="small">
@@ -84,7 +94,7 @@
                 </el-form-item>
                 <el-form-item label="头像" prop="avatar">
                     <!-- {{ form.avatar }} -->
-                    <ChooseImage v-model="form.avatar"/>
+                    <!-- <ChooseImage v-model="form.avatar"/> -->
                 </el-form-item>
                 <el-form-item label="所属角色" prop="role_id">
                     <el-select v-model="form.role_id" placeholder="选择所属角色">
@@ -109,14 +119,13 @@
 import { ref } from 'vue';
 import ListHeader from '~/components/ListHeader.vue';
 import FormDrawer from '~/components/FormDrawer.vue';
-import ChooseImage from '~/components/ChooseImage.vue';
 import {
-    getUserList,
-    updateUserStatus,
-    createUser,
-    updateUser,
-    deleteUser
-} from '~/api/user.js';
+    getLevelList,
+    updateLevelStatus,
+    createLevel,
+    updateLevel,
+    deleteLevel
+} from '~/api/level.js';
 import { useInitTable, useInitForm } from '~/composables/useCommon.js';
 
 const roles = ref([]);
@@ -136,7 +145,7 @@ const {
     searchForm: {
         keyword: ''
     },
-    getList: getUserList,
+    getList: getLevelList,
     onGetListSuccess: (res)=> {
         tableData.value = res.list.map(o => {
             o.statusLoading = false;
@@ -145,8 +154,8 @@ const {
         total.value = res.totalCount;
         roles.value = res.roles;
     },
-    delete: deleteUser,
-    updateStatus: updateUserStatus
+    delete: deleteLevel,
+    updateStatus: updateLevelStatus
 });
 
 const {
@@ -169,7 +178,7 @@ const {
         avatar: ""
     },
     getData,
-    update: updateUser,
-    create: createUser
+    update: updateLevel,
+    create: createLevel
 });
 </script>

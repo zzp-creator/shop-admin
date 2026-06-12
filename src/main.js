@@ -5,7 +5,8 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import 'virtual:windi.css'
 import { router } from './router'
-import store from './store'
+// import store from './store'
+import { createPinia } from 'pinia' // 新增
 
 import './permission'
 import 'nprogress/nprogress.css'
@@ -20,6 +21,7 @@ import permission from '~/directives/permission.js'
 
 const app = createApp(App)
 
+app.use(createPinia())
 app.use(ElementPlus)
 
 const saveDark = localStorage.getItem('vueuse-color-scheme');
@@ -32,10 +34,9 @@ if (saveDark) {
 } else {
   document.documentElement.classList.remove('dark');
 }
-// document.documentElement.classList.add('dark')
 
 app.use(router)
-app.use(store)
+// app.use(store)
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)

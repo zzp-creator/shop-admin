@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-row :gutter="20" class="mt-5" v-if="iconNavs && iconNavs.length > 0">
+        <el-row :gutter="20" class="mt-5 flex flex-wrap justify-between" v-if="iconNavs && iconNavs.length > 0">
             <el-col :span="3" :offset="0" v-for="(item, index) in iconNavs" :key="index">
                 <el-card shadow="hover" @click="$router.push(item.path)">
                     <div class="flex flex-col items-center justify-center cursor-pointer">
@@ -26,22 +26,28 @@ const iconNavs = [
         path:"/user/list"
     },
     {
-        icon:"shopping-cart",
+        icon:"data-analysis",
         color:"text-violet-500",
-        title:"商品",
-        path:"/goods/list"
+        title:"会员",
+        path:"/level/list"
     },
     {
-        icon:"tickets",
+        icon:"coordinate",
         color:"text-fuchsia-500",
-        title:"订单",
-        path:"/order/list"
+        title:"管理员",
+        path:"/manager/list"
     },
     {
-        icon:"chat-dot-square",
+        icon:"connection",
         color:"text-teal-500",
-        title:"评价",
-        path:"/comment/list"
+        title:"权限",
+        path:"/access/list"
+    },
+    {
+        icon:"histogram",
+        color:"text-grey-500",
+        title:"角色",
+        path:"/role/list"
     },
     {
         icon:"picture",
@@ -55,17 +61,11 @@ const iconNavs = [
         title:"公告",
         path:"/notice/list"
     },
-    {
-        icon:"set-up",
-        color:"text-grey-500",
-        title:"配置",
-        path:"/setting/base"
-    },
-    {
-        icon:"files",
-        color:"text-yellow-500",
-        title:"优惠券",
-        path:"/coupon/list"
-    },
+    // {
+    //     icon:"files",
+    //     color:"text-yellow-500",
+    //     title:"优惠券",
+    //     path:"/coupon/list"
+    // },
 ]
 </script>

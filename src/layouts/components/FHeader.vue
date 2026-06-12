@@ -4,8 +4,8 @@
             <el-icon class="mr-1"><eleme-filled/></el-icon>
             实战编程
         </span>
-        <el-icon class="icon-btn" @click="$store.commit('handleAsideWidth')">
-            <fold v-if="$store.state.asideWidth == '250px'" />
+        <el-icon class="icon-btn" @click="userStore.toggleAsideWidth()">
+            <fold v-if="userStore.asideWidth == '250px'" />
             <Expand v-else />
         </el-icon>
         <el-tooltip effect="dark" content="刷新" placement="bottom">
@@ -26,8 +26,8 @@
             </el-tooltip>
             <el-dropdown class="dropdown" @command="handleCommand">
                 <span class="flex items-center text-light-50">
-                    <el-avatar class="mr-2" :size="25" :src="$store.state.user.avatar" />
-                    {{ $store.state.user.username }}
+                    <el-avatar class="mr-2" :size="25" :src="userStore.user.avatar" />
+                    {{ userStore.user.username }}
                     <el-icon class="el-icon--right">
                         <arrow-down />
                     </el-icon>
@@ -64,6 +64,9 @@
 import FormDrawer from "~/components/FormDrawer.vue";
 import { useDark, useToggle, useFullscreen } from '@vueuse/core';
 import { useRepassword, useLogout } from "~/composables/userManager";
+import { useUserStore } from "../../store/user";
+
+const userStore = useUserStore();
 
 const { 
         // 是否全屏

@@ -1,10 +1,12 @@
-import store from "~/store";
+// import store from "~/store";
+import { useUserStore } from "~/store/user";
 
 function hasPermission(value, el = false) {
     if (!Array.isArray(value)) {
         throw new Error(`需要配置权限，例如 v-permission="['getStatistics3,GET']"`);  
     }
-    const hasAuth = value.findIndex(v => store.state.ruleNames.includes(v)) != -1;
+    const userStore = useUserStore();
+    const hasAuth = value.findIndex(v => userStore.ruleNames.includes(v)) != -1;
     if (el && !hasAuth) {
         el.parentNode && el.parentNode.removeChild(el);
     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="f-menu" :style="{ width:$store.state.asideWidth }">
+    <div class="f-menu" :style="{ width:userStore.asideWidth }">
         <el-menu :default-active="defaultActive" :unique-opened="true" :collapse-transition="false" :collapse="isCollapse" default-active="2" class="border-0 dark:bg-header-dark" @select="handleSelect">
         <template v-for="(item, index) in asideMenus" :key="index">
             <el-sub-menu v-if="item.child && item.child.length > 0" 
@@ -33,10 +33,12 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useRouter, useRoute, onBeforeRouteUpdate } from 'vue-router';
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
+import { useUserStore } from '../../store/user';
 
 const router = useRouter();
-const store = useStore();
+// const store = useStore();
+const userStore = useUserStore();
 const route = useRoute();
 
 // 默认选中
@@ -48,10 +50,10 @@ onBeforeRouteUpdate((to, from)=> {
 })
 
 // 是否折叠
-const isCollapse = computed(()=> !(store.state.asideWidth == '250px'))
-
-const asideMenus = computed(()=> store.state.menus)
-
+// const isCollapse = computed(()=> !(store.state.asideWidth == '250px'))
+// const asideMenus = computed(()=> store.state.menus)
+const isCollapse = computed(()=> !(userStore.asideWidth == '250px'))
+const asideMenus = computed(()=> userStore.menus)
 const handleSelect = (e)=> {
     router.push(e)
 }

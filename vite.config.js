@@ -26,7 +26,8 @@ export default defineConfig({
       scan: {
         dirs: ['.'],
         exclude: ['node_modules/**']
-      }
+      },
+      preflight: false
     })
   ],
 })

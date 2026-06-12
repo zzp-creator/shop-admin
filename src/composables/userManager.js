@@ -2,11 +2,13 @@ import { ref, reactive } from "vue";
 import { logOut, updatePassword } from "~/api/manager";
 import { showModel, toast } from "~/composables/util";
 import { useRouter } from "vue-router";
-import { useStore } from "vuex"
+// import { useStore } from "vuex"
+import { useUserStore } from "../store/user";
 
 export function useRepassword() {
     const router = useRouter()
-    const store = useStore()
+    // const store = useStore()
+    const userStore = useUserStore()
 
     const form = reactive({
         oldpassword: '',
@@ -51,7 +53,8 @@ export function useRepassword() {
                 .then(res => {
                     toast("修改密码成功，请重新登录");
                     // 执行退出登录流程
-                    store.dispatch("logout");
+                    // store.dispatch("logout");
+                    userStore.logoutAction();
                     // 跳转回登录页
                     router.path("/login");
                 })
@@ -75,18 +78,23 @@ export function useRepassword() {
 
 export function useLogout() {
     const router = useRouter()
-    const store = useStore()
+    // const store = useStore()
+    const userStore = useUserStore()
 
     function handleLogout() {
         showModel("是否要退出登录？").then(res => {
-            logOut().finally(() => {
+            // logOut().finally(() => {
 
-                store.dispatch("logOut")
-                // 跳转回登录页
-                router.push("/login");
-                // 提示退出登录成功
-                toast("退出登录成功");
-            })
+                // store.dispatch("logOut")
+                userStore.logoutAction().then(() => {
+                    // 跳转回登录页
+                    router.push("/login");
+                    // 提示退出登录成功
+                    toast("退出登录成功");
+                }).catch(err => {
+                     // 如果 logoutAction 内部没有吞掉错误，这里可能会捕获到
+                     console.error("退出过程出错", err);
+                });;
         })
     }
 

@@ -1,7 +1,8 @@
 import { router, addRoutes } from "~/router";
 import { getToken } from "~/composables/auth";
 import { toast, showFullLoading, hideFullLoading } from "~/composables/util";
-import store from "./store";
+// import store from "./store";
+import { useUserStore } from "~/store/user";
 
 // 全局前置守卫
 let hasGetInfo = false;
@@ -10,6 +11,7 @@ router.beforeEach(async (to, from, next)=> {
     showFullLoading()
 
     const token = getToken()
+    const userStore = useUserStore()
 
     // 没有登录，就强制跳转回登录页面
     if (!token && to.path != "/login") {
@@ -26,7 +28,8 @@ router.beforeEach(async (to, from, next)=> {
     let hasNewRoute = false
     // 如果用户登录了，自动获取用户信息，并存储在vuex中
     if (token && !hasGetInfo) {
-        let { menus } = await store.dispatch("getInfo")     
+        // let { menus } = await store.dispatch("getInfo")     
+        let { menus } = await userStore.getInfoAction();
         hasGetInfo = true;
         // 动态添加路由
         hasNewRoute = addRoutes(menus)

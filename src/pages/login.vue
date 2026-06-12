@@ -1,14 +1,16 @@
 <template>
-    <el-row class="min-h-screen bg-indigo-500">
+    <!-- 粒子背景 -->
+    <ParticleBackground />
+    <el-row class="min-h-screen">
         <el-col :lg="16" :md="12" class="flex items-center justify-center">
             <div>
                 <div class="font-bold text-5xl text-light-50 mb-4">欢迎光临</div>
                 <div class="text-gray-200 text-sm">此项目是实战演练</div>
             </div>
         </el-col>
-        <el-col :lg="8" :md="12" class="bg-light-50 flex items-center justify-center 
+        <el-col :lg="8" :md="12" class="flex items-center justify-center 
         flex-col">
-            <h2 class="font-bold text-3xl text-gray-800">欢迎回来</h2>
+            <h2 class="font-bold text-3xl text-gray-500">欢迎回来</h2>
             <div class="flex items-center justify-center my-5 text-gray-300
              space-x-2">
                 <span class="h-[1px] w-16 bg-gray-200"></span>
@@ -43,7 +45,9 @@
 import { ref, reactive, onMounted, onBeforeUnmount } from 'vue';
 import { toast } from '~/composables/util';
 import { useRouter } from "vue-router";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
+import { useUserStore } from '../store/user';
+import ParticleBackground from '~/components/ParticleBackground.vue';
 
 const form = reactive({
     username: '',
@@ -69,7 +73,8 @@ const rules = {
 
 const router = useRouter();
 
-const store = useStore();
+// const store = useStore();
+const userStore = useUserStore();
 
 const formRef = ref(null);
 
@@ -81,13 +86,20 @@ const onSubmit = () => {
 
         loading.value = true;
 
-        store.dispatch("login", form).then(res => {
+        userStore.loginAction(form).then(res => {
             toast('登录成功')
             //跳转到后台首页
             router.push('/')
         }).finally( () => {
             loading.value = false
         })
+        // store.dispatch("login", form).then(res => {
+        //     toast('登录成功')
+        //     //跳转到后台首页
+        //     router.push('/')
+        // }).finally( () => {
+        //     loading.value = false
+        // })
     })
 }
 
@@ -97,9 +109,11 @@ function onKeyUp(e) {
 }
 // 添加键盘监听事件
 onMounted(()=> {
+    document.body.style.backgroundColor = 'transparent';
     document.addEventListener("keyup", onKeyUp)
 })
 onBeforeUnmount(()=> {
+    document.body.style.backgroundColor = '';
     document.removeEventListener("keyup", onKeyUp)
 })
 

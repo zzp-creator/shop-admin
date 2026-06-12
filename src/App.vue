@@ -11,9 +11,12 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <style>
 body {
+  /*  transparent !important*/
   background-color: var(--bg-body);
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s;
+  margin: 0;
+  padding: 0;
 }
 </style>
 

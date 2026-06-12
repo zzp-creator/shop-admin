@@ -1,7 +1,8 @@
 import axios from "axios";
 import { toast } from '~/composables/util';
 import { getToken } from '~/composables/auth';
-import store from './store'
+// import store from './store'
+import { useUserStore } from "~/store/user";
 
 // 判断当前环境是开发环境还是生产环境
 const isProduction = import.meta.env.PROD;
@@ -36,7 +37,9 @@ service.interceptors.response.use(function (response) {
     const msg = error.response.data.msg || '请求失败'
 
     if (msg == "非法token，请先登录") {
-      store.dispatch("logout").finally(()=> location.reload())
+      const userStore = useUserStore();
+      userStore.logoutAction().finally(()=> location.reload())
+      // store.dispatch("logout").finally(()=> location.reload())
     }
     
     toast(msg, 'error')

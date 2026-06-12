@@ -27,7 +27,24 @@ const store = createStore({
         state.asideWidth = state.asideWidth == "250px" ? "64px" : "250px"
     },
     SET_MENUS(state, menus) {
-        state.menus = menus;
+        // 定义白名单
+        const allowedMenus = [
+            '后台面板',
+            '用户管理',
+            '管理员管理',
+            '其他模块'
+        ];
+
+        const filterMenuTree = (menus) => {
+            return menus.filter(item => {
+                // 判断是否在白名单中
+                if(allowedMenus.includes(item.name)) {
+                    return true;
+                }
+                return false;
+            })
+        }
+        state.menus = filterMenuTree(menus);
     },
     SET_RULENAMES(state, ruleNames) {
         state.ruleNames = ruleNames;

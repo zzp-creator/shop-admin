@@ -6,6 +6,7 @@ import NotFound from '~/pages/404.vue'
 import GoodList from '~/pages/goods/list.vue'
 import CategoryList from '~/pages/category/typeList.vue'
 import UserList from '~/pages/user/list.vue'
+import UserVipList from '~/pages/level/list.vue'
 import OrderList from '~/pages/order/list.vue'
 import CommentList from '~/pages/comment/list.vue'
 import ImageList from '~/pages/image/list.vue'
@@ -56,6 +57,13 @@ const asyncRoutes = [
     component: UserList, 
     meta: { 
       title: "用户列表" 
+    }
+  },{
+    path: '/level/list', 
+    name: '/level/list', 
+    component: UserVipList, 
+    meta: { 
+      title: "会员列表" 
     }
   },{
     path: '/order/list', 
