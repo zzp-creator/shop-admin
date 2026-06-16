@@ -114,6 +114,14 @@ const handleEdit = (item)=> {
             loading.value = false;
         })
     })
+    .catch(err => {
+        // 可选：区分“取消”和其他错误
+        console.log(err)
+        if (err !== 'cancel') {
+            console.error('重命名失败:', err);
+            toast('重命名失败');
+        }
+    })
 }
 
 // 删除图片
